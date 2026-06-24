@@ -1,0 +1,211 @@
+1. Products with Sales Above Average
+Question:
+
+Find products whose sales are greater than average sales.
+
+SELECT *
+FROM superstore
+WHERE Sales >
+(
+    SELECT AVG(Sales)
+    FROM superstore
+);
+Interview Concept:
+
+Subquery
+
+2. Top 5 Highest Profit Orders
+SELECT Order_ID,
+       Profit
+FROM superstore
+ORDER BY Profit DESC
+LIMIT 5;
+
+3. Regions Having Sales Greater Than 1 Million
+SELECT Region,
+       SUM(Sales) AS TotalSales
+FROM superstore
+GROUP BY Region
+HAVING SUM(Sales) > 1000000;
+Concept:
+
+HAVING
+
+4. Profit or Loss Category
+SELECT Product_Name,
+       Profit,
+       CASE
+          WHEN Profit > 0 THEN 'Profit'
+          ELSE 'Loss'
+       END AS Status
+FROM superstore;
+Concept:
+
+CASE WHEN
+
+5. Customer Ranking
+SELECT Customer_Name,
+       SUM(Sales) AS TotalSales,
+       RANK() OVER(ORDER BY SUM(Sales) DESC) AS SalesRank
+FROM superstore
+GROUP BY Customer_Name;
+Concept:
+
+Window Function
+
+6. Dense Rank Example
+SELECT Customer_Name,
+       SUM(Sales) AS TotalSales,
+       DENSE_RANK() OVER(ORDER BY SUM(Sales) DESC) AS RankNo
+FROM superstore
+GROUP BY Customer_Name;
+
+7. Row Number Example
+SELECT Customer_Name,
+       Sales,
+       ROW_NUMBER() OVER(ORDER BY Sales DESC) AS RowNum
+FROM superstore;
+
+8. Top Customer From Each Region
+WITH cte AS
+(
+SELECT Region,
+       Customer_Name,
+       SUM(Sales) AS TotalSales,
+       ROW_NUMBER() OVER
+       (
+         PARTITION BY Region
+         ORDER BY SUM(Sales) DESC
+       ) rn
+FROM superstore
+GROUP BY Region,Customer_Name
+)
+SELECT *
+FROM cte
+WHERE rn=1;
+Concept:
+
+CTE + Window Function
+
+9. Running Total of Sales
+SELECT Order_Date,
+       Sales,
+       SUM(Sales)
+       OVER
+       (
+         ORDER BY Order_Date
+       ) AS RunningSales
+FROM superstore;
+Concept:
+
+Running Total
+
+10. Previous Sale Value
+SELECT Order_Date,
+       Sales,
+       LAG(Sales)
+       OVER(ORDER BY Order_Date)
+       AS PreviousSales
+FROM superstore;
+Concept:
+
+LAG()
+
+11. Next Sale Value
+SELECT Order_Date,
+       Sales,
+       LEAD(Sales)
+       OVER(ORDER BY Order_Date)
+       AS NextSales
+FROM superstore;
+Concept:
+
+LEAD()
+
+12. Highest Sales Product in Each Category
+WITH product_sales AS
+(
+SELECT Category,
+       Product_Name,
+       SUM(Sales) AS TotalSales,
+       RANK() OVER
+       (
+          PARTITION BY Category
+          ORDER BY SUM(Sales) DESC
+       ) rnk
+FROM superstore
+GROUP BY Category,Product_Name
+)
+SELECT *
+FROM product_sales
+WHERE rnk=1;
+
+13. Top 3 Customers Per Region
+WITH cte AS
+(
+SELECT Region,
+       Customer_Name,
+       SUM(Sales) AS TotalSales,
+       ROW_NUMBER() OVER
+       (
+          PARTITION BY Region
+          ORDER BY SUM(Sales) DESC
+       ) rn
+FROM superstore
+GROUP BY Region,Customer_Name
+)
+SELECT *
+FROM cte
+WHERE rn<=3;
+
+14. Find Duplicate Orders
+SELECT Order_ID,
+       COUNT(*)
+FROM superstore
+GROUP BY Order_ID
+HAVING COUNT(*) > 1;
+
+15. Percentage Contribution by Category
+SELECT Category,
+       ROUND(SUM(Sales)*100/
+       (SELECT SUM(Sales)
+        FROM superstore),2)
+       AS SalesPercentage
+FROM superstore
+GROUP BY Category;
+
+16. Best Month by Sales
+SELECT MONTH(Order_Date) AS MonthNo,
+       SUM(Sales) AS TotalSales
+FROM superstore
+GROUP BY MONTH(Order_Date)
+ORDER BY TotalSales DESC;
+
+17. Worst Performing Product
+SELECT Product_Name,
+       SUM(Profit) AS TotalProfit
+FROM superstore
+GROUP BY Product_Name
+ORDER BY TotalProfit
+LIMIT 1;
+
+18. Average Sales by Region
+SELECT Region,
+       AVG(Sales)
+FROM superstore
+GROUP BY Region;
+
+19. Customers with More Than 10 Orders
+SELECT Customer_Name,
+       COUNT(*) AS OrdersCount
+FROM superstore
+GROUP BY Customer_Name
+HAVING COUNT(*) > 10;
+
+20. Most Ordered Product
+SELECT Product_Name,
+       COUNT(*) AS OrderCount
+FROM superstore
+GROUP BY Product_Name
+ORDER BY OrderCount DESC
+LIMIT 1;

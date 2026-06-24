@@ -1,0 +1,59 @@
+1. Dataset Overview
+SELECT COUNT(*) AS Total_Orders
+FROM superstore;
+
+SELECT COUNT(DISTINCT Customer_ID) AS Total_Customers
+FROM superstore;
+SELECT COUNT(DISTINCT Product_ID) AS Total_Products
+FROM superstore;
+
+2. Total Sales & Profit
+SELECT
+ROUND(SUM(Sales),2) AS Total_Sales,
+ROUND(SUM(Profit),2) AS Total_Profit
+FROM superstore;
+
+3. Top 10 Products by Sales
+SELECT Product_Name,
+ROUND(SUM(Sales),2) AS Total_Sales
+FROM superstore
+GROUP BY Product_Name
+ORDER BY Total_Sales DESC
+LIMIT 10;
+
+4. Top 10 Customers
+SELECT Customer_Name,
+ROUND(SUM(Sales),2) AS Total_Sales
+FROM superstore
+GROUP BY Customer_Name
+ORDER BY Total_Sales DESC
+LIMIT 10;
+
+5. Region Wise Sales
+SELECT Region,
+ROUND(SUM(Sales),2) AS Total_Sales
+FROM superstore
+GROUP BY Region
+ORDER BY Total_Sales DESC;
+
+6. Category Wise Sales
+SELECT Category,
+ROUND(SUM(Sales),2) AS Total_Sales
+FROM superstore
+GROUP BY Category
+ORDER BY Total_Sales DESC;
+
+7. Sub Category Wise Profit
+SELECT Sub_Category,
+ROUND(SUM(Profit),2) AS Total_Profit
+FROM superstore
+GROUP BY Sub_Category
+ORDER BY Total_Profit DESC;
+
+8. Top 10 Loss Making Products
+SELECT Product_Name,
+ROUND(SUM(Profit),2) AS Total_Profit
+FROM superstore
+GROUP BY Product_Name
+ORDER BY Total_Profit ASC
+LIMIT 10;
